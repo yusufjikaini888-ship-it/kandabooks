@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kanda Books — Muh Yusuf Asri</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: { paper:'#F3ECDC', parchment:'#EDE3CC', ink:'#241C13', clay:'#8A3826', line:'#D4C6A8', wood:'#8F6B46' },
+      fontFamily: { display:['Fraunces','Georgia','serif'], body:['Spectral','Georgia','serif'] }
+    }}
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+  html{ scroll-behavior:smooth; }
+  body{ animation: pageIn .6s ease both; }
+  @keyframes pageIn{ from{ opacity:0 } }
+  ::selection{ background:#8A3826; color:#F5EDDC; }
+  ::-webkit-scrollbar{ width:10px; } ::-webkit-scrollbar-track{ background:#EFE6D3; }
+  ::-webkit-scrollbar-thumb{ background:#C4B28D; border-radius:8px; border:2px solid #EFE6D3; }
+  :focus-visible{ outline:2px solid #8A3826; outline-offset:2px; }
+  button{ touch-action:manipulation; }
+
+  .grain{
+    position:fixed; inset:0; z-index:80; pointer-events:none; opacity:.05; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .eyebrow{ margin-top:1.1rem; font-size:.68rem; letter-spacing:.42em; text-transform:uppercase; color:rgba(36,28,19,.55); text-align:center; }
+  h1.masthead{ font-family:Fraunces,Georgia,serif; font-size:clamp(2.9rem,8vw,5.2rem); line-height:1.02; text-align:center; font-weight:600; margin-top:.5rem; letter-spacing:.005em; }
+  h1.masthead .bk{ font-style:italic; font-weight:500; color:#8A3826; }
+  .ornament{ display:flex; align-items:center; justify-content:center; gap:.85rem; margin-top:1.15rem; }
+  .ornament::before,.ornament::after{ content:''; height:1px; width:72px; background:#C9B995; }
+  .ornament .dia{ width:7px; height:7px; transform:rotate(45deg); background:#8A3826; }
+  .byline{ text-align:center; margin-top:1rem; font-size:.95rem; color:#3A2F23; }
+  .tagline{ text-align:center; margin-top:.35rem; font-size:.85rem; font-style:italic; color:rgba(36,28,19,.55); }
+
+  .btn-primary{ display:inline-flex; align-items:center; gap:.55rem; background:#241C13; color:#F2E8D5; padding:.72rem 1.3rem;
+    font-family:Spectral,serif; font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; border:1px solid #241C13;
+    transition:background .25s,border-color .25s,box-shadow .25s,transform .12s; box-shadow:0 2px 0 rgba(36,28,19,.25); }
+  .btn-primary:hover{ background:#8A3826; border-color:#8A3826; box-shadow:0 6px 16px -6px rgba(138,56,38,.55); }
+  .btn-primary:active{ transform:translateY(1px); }
+  .btn-primary:disabled{ opacity:.55; pointer-events:none; }
+  .btn-outline{ display:inline-flex; align-items:center; gap:.5rem; background:transparent; color:#3A2F23; padding:.68rem 1.2rem;
+    font-family:Spectral,serif; font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; border:1px solid #B9AB90; transition:.22s; }
+  .btn-outline:hover{ border-color:#241C13; background:rgba(255,255,255,.5); }
+  .btn-danger{ display:inline-flex; align-items:center; gap:.5rem; background:#A03B2E; color:#F6EBDD; padding:.68rem 1.2rem;
+    font-family:Spectral,serif; font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; border:1px solid #A03B2E; transition:.2s; }
+  .btn-danger:hover{ background:#7E2C21; border-color:#7E2C21; }
+  .btn-danger-ghost{ display:inline-flex; align-items:center; gap:.45rem; color:#A03B2E; padding:.6rem .5rem; font-family:Spectral,serif;
+    font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; transition:.2s; }
+  .btn-danger-ghost:hover{ background:rgba(160,59,46,.08); }
+
+  .lbl{ display:block; font-size:.66rem; letter-spacing:.22em; text-transform:uppercase; color:rgba(36,28,19,.55); margin-bottom:.35rem; }
+  .field{ width:100%; background:transparent; border:0; border-bottom:1px solid #C6B795; padding:.5rem 2px;
+    font-family:Spectral,serif; font-size:1rem; color:#241C13; transition:border-color .2s; }
+  .field:focus{ outline:none; border-bottom-color:#8A3826; }
+  .field::placeholder{ color:rgba(36,28,19,.35); font-style:italic; }
+
+  .dropzone{ border:1.5px dashed #C0B092; border-radius:3px; padding:1.3rem 1rem; text-align:center; cursor:pointer;
+    transition:.2s; background:rgba(255,255,255,.35); }
+  .dropzone:hover,.dropzone.over{ border-color:#8A3826; background:rgba(138,56,38,.06); }
+  .dropzone.has-file{ border-style:solid; border-color:#5F7A4F; background:rgba(95,122,79,.07); text-align:left; }
+  .cover-pick{ width:86px; height:112px; border:1.5px dashed #C0B092; border-radius:3px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:.35rem; cursor:pointer; color:rgba(36,28,19,.5); transition:.2s; background:rgba(255,255,255,.35); }
+  .cover-pick:hover{ border-color:#8A3826; color:#8A3826; }
+  #coverPreview{ width:86px; height:112px; object-fit:cover; border:1px solid #D4C6A8; border-radius:3px; }
+
+  .modal{ position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:1rem;
+    background:rgba(26,17,10,.55); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+  .modal.open{ display:flex; animation:fadeIn .22s ease both; }
+  @keyframes fadeIn{ from{ opacity:0 } }
+  .modal-panel{ position:relative; background:#F6EFDE; border:1px solid #D4C6A8; border-radius:4px; padding:1.8rem 1.9rem;
+    max-height:calc(100vh - 2rem); overflow-y:auto; box-shadow:0 30px 80px -20px rgba(20,10,4,.55);
+    animation:popIn .3s cubic-bezier(.2,.9,.35,1.12) both; }
+  .modal-panel::before{ content:''; position:absolute; inset:8px; border:1px solid rgba(138,56,38,.18); border-radius:2px; pointer-events:none; }
+  @keyframes popIn{ from{ opacity:0; transform:translateY(14px) scale(.97) } }
+  .icon-x{ position:absolute; right:.9rem; top:.9rem; width:2rem; height:2rem; display:grid; place-items:center; border-radius:9999px;
+    color:rgba(36,28,19,.5); transition:.2s; z-index:2; }
+  .icon-x:hover{ background:rgba(36,28,19,.08); color:#241C13; }
+  .detail-cover{ box-shadow:10px 12px 26px -10px rgba(40,25,10,.5), 0 0 0 1px rgba(36,28,19,.15); }
+
+  #shelf{ margin-top:2.6rem; }
+  .shelf-row + .shelf-row{ margin-top:3.4rem; }
+  .shelf-line{ display:flex; align-items:flex-end; justify-content:center; gap:34px; flex-wrap:wrap; }
+  .plank{ height:11px; border-radius:2px; background:#8F6B46; margin-top:14px;
+    box-shadow:0 14px 24px -10px rgba(70,45,20,.55), inset 0 2px 0 rgba(255,255,255,.18), inset 0 -3px 0 rgba(0,0,0,.22); }
+  .shelf-book{ display:flex; flex-direction:column; align-items:center; cursor:pointer; -webkit-tap-highlight-color:transparent;
+    animation:rise .55s cubic-bezier(.2,.7,.3,1) both; background:transparent; border:0; padding:0; }
+  @keyframes rise{ from{ opacity:0; transform:translateY(22px) } }
+  .book-scene{ position:relative; }
+  .book-shadow{ position:absolute; left:-6%; right:-6%; bottom:-13px; height:16px;
+    background:radial-gradient(ellipse at 50% 50%, rgba(56,34,14,.4), rgba(56,34,14,0) 70%); transition:transform .5s,opacity .5s; }
+  .shelf-book:hover .book-shadow{ transform:scaleX(1.15); opacity:.8; }
+
+  .book3d{ position:relative; width:var(--w); height:var(--h); transform-style:preserve-3d; will-change:transform;
+    transform-origin:30% 50%; transition:transform .55s cubic-bezier(.3,1.25,.4,1); }
+  @media (hover:hover){
+    .shelf-book:hover .book3d, .shelf-book:focus-visible .book3d{ transform:rotateY(30deg) translateZ(2px); }
+  }
+  .face{ position:absolute; top:0; left:0; height:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+  .face.front{ width:100%; overflow:hidden; border-radius:2px 3px 3px 2px; background:#fff;
+    box-shadow:inset 5px 0 9px -4px rgba(0,0,0,.5), inset -1px 0 3px -1px rgba(0,0,0,.25); }
+  .face.front img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .front-shade{ position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(105deg, rgba(0,0,0,.16), rgba(0,0,0,0) 18%), linear-gradient(to left, rgba(0,0,0,.12), rgba(0,0,0,0) 9%); }
+  .face.spine{ width:var(--d); transform-origin:left center; transform:translateX(-100%) rotateY(-90deg); }
+  .spine-text{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; writing-mode:vertical-rl;
+    font-family:Fraunces,Georgia,serif; font-size:.6rem; letter-spacing:.13em; text-transform:uppercase; padding:10px 0; overflow:hidden; white-space:nowrap; }
+  .face.pages-edge{ width:var(--d); left:100%; transform-origin:left center; transform:rotateY(90deg);
+    background:repeating-linear-gradient(to right,#EFE6CE 0 2px,#DCCEAC 2px 3px); }
+  .face.backface{ width:100%; transform:translateZ(calc(-1 * var(--d))) rotateY(180deg); }
+  .caption{ margin-top:1.15rem; text-align:center; width:100%; }
+  .cap-title{ font-family:Fraunces,Georgia,serif; font-size:.92rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cap-sub{ font-size:.66rem; letter-spacing:.16em; text-transform:uppercase; color:rgba(36,28,19,.5); margin-top:.2rem; }
+  .newly .face.front::after{ content:''; position:absolute; inset:0; box-shadow:inset 0 0 0 3px rgba(138,56,38,.9);
+    animation:ringOut 2.4s ease .5s both; }
+  @keyframes ringOut{ from{ opacity:1 } to{ opacity:0 } }
+
+  /* ---------- READER (immersive fullscreen) ---------- */
+  #reader{ opacity:0; transition:opacity .3s ease; }
+  #reader.open{ opacity:1; }
+  #reader.imm { cursor:default; }
+  #reader.imm.ui-hidden { cursor:none; }
+
+  .stage-light{ width:min(96vw,1400px); height:min(84vh,900px); border-radius:50%;
+    background:radial-gradient(closest-side, rgba(255,222,164,.10), rgba(255,222,164,0) 74%); }
+
+  .rbtn{ width:2.5rem; height:2.5rem; display:grid; place-items:center; border:1px solid rgba(239,228,204,.25);
+    border-radius:9999px; color:#EFE4CC; transition:.2s; background:rgba(20,12,6,.35); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+  .rbtn:hover:not(:disabled){ background:rgba(239,228,204,.18); border-color:rgba(239,228,204,.55); }
+  .rbtn:disabled{ opacity:.28; pointer-events:none; }
+  .rbtn-wide{ display:inline-flex; align-items:center; gap:.5rem; padding:.5rem 1rem; border:1px solid rgba(239,228,204,.25);
+    border-radius:9999px; font-size:.74rem; letter-spacing:.14em; text-transform:uppercase; color:#EFE4CC; transition:.2s;
+    background:rgba(20,12,6,.35); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+  .rbtn-wide:hover{ background:rgba(239,228,204,.14); border-color:rgba(239,228,204,.55); }
+
+  /* Header & footer as floating overlays that auto-hide */
+  #readerHeader, #readerFooter{
+    position:absolute; left:0; right:0; z-index:20; pointer-events:auto;
+    transition:opacity .45s cubic-bezier(.2,.8,.3,1), transform .45s cubic-bezier(.2,.8,.3,1);
+  }
+  #readerHeader{ top:0; padding: .85rem 1.25rem; background:linear-gradient(to bottom, rgba(26,17,10,.85), rgba(26,17,10,0)); }
+  #readerFooter{ bottom:0; padding: .85rem 1.25rem; background:linear-gradient(to top, rgba(26,17,10,.85), rgba(26,17,10,0)); }
+  #reader.ui-hidden #readerHeader{ opacity:0; transform:translateY(-100%); pointer-events:none; }
+  #reader.ui-hidden #readerFooter{ opacity:0; transform:translateY(100%); pointer-events:none; }
+  #reader.ui-hidden #readerHint{ opacity:0 !important; }
+
+  .book-perspective{ perspective:2600px; perspective-origin:50% 50%; }
+  .reader-book{ position:relative; display:flex; transform-style:preserve-3d;
+    box-shadow:2px 0 0 #E3D7BC, 4px 0 0 #D2C3A2, 0 3px 0 #E3D7BC, 0 6px 0 #D2C3A2,
+               0 40px 90px -26px rgba(0,0,0,.85), 0 0 0 1px rgba(0,0,0,.4); }
+  .page-half{ position:relative; width:var(--pw); height:var(--ph); background:#F7F1E1; overflow:hidden;
+    transition:transform .48s cubic-bezier(.3,.1,.25,1), opacity .48s ease; }
+  .page-half canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+  .ph-left{ border-radius:5px 0 0 5px; box-shadow:inset -18px 0 26px -16px rgba(70,42,15,.5); }
+  .ph-right{ border-radius:0 5px 5px 0; box-shadow:inset 18px 0 26px -16px rgba(70,42,15,.5); }
+  .reader-book.single .ph-left{ display:none; }
+  .reader-book.single .ph-right{ border-radius:5px; }
+  .reader-book.single .gutter{ display:none; }
+  .gutter{ position:absolute; top:0; bottom:0; width:16%; pointer-events:none; z-index:5; }
+  .gutter-l{ right:0; background:linear-gradient(to left, rgba(70,42,15,.3), rgba(70,42,15,0)); }
+  .gutter-r{ left:0; background:linear-gradient(to right, rgba(70,42,15,.3), rgba(70,42,15,0)); }
+
+  .leaf{ position:absolute; top:0; left:50%; width:50%; height:100%; transform-origin:left center;
+    transform-style:preserve-3d; z-index:40; will-change:transform; pointer-events:none; }
+  .leaf-face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    background:#F7F1E1; overflow:hidden; }
+  .lf-front{ transform:translateZ(.6px); }
+  .lf-back{ transform:rotateY(180deg) translateZ(.6px); }
+  .leaf-face canvas{ width:100%; height:100%; display:block; }
+  .leaf-shade{ position:absolute; inset:0; opacity:0; pointer-events:none; will-change:opacity; }
+  .lf-front .leaf-shade{ background:linear-gradient(to right, rgba(60,36,14,.55), rgba(60,36,14,.05) 55%, rgba(60,36,14,0)); }
+  .lf-back  .leaf-shade{ background:linear-gradient(to left,  rgba(60,36,14,.55), rgba(60,36,14,.05) 55%, rgba(60,36,14,0)); }
+
+  .spinner{ width:34px; height:34px; border-radius:50%; border:2px solid rgba(239,228,204,.2); border-top-color:#B0653F;
+    animation:spin 1s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
+
+  .toast{ display:flex; align-items:flex-start; gap:.6rem; background:#241C13; color:#F0E6D0; padding:.8rem 1rem;
+    border-radius:3px; border-left:3px solid #8A3826; box-shadow:0 12px 30px -8px rgba(20,10,4,.5);
+    font-size:.86rem; max-width:340px; opacity:0; transform:translateY(8px);
+    transition:all .3s cubic-bezier(.2,.8,.3,1); }
+  .toast.show{ opacity:1; transform:none; }
+  .toast.success{ border-left-color:#5F7A4F; }
+  .toast.error{ border-left-color:#C4552F; }
+  .toast svg{ flex-shrink:0; margin-top:2px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+
+<body class="bg-paper text-ink font-body antialiased">
+<div class="grain"></div>
+
+<!-- ============ MASTHEAD ============ -->
+<header class="max-w-6xl mx-auto px-5 pt-10 md:pt-14 pb-9">
+  <div class="flex justify-center">
+    <img src="https://i.postimg.cc/YSnsR9y4/logo-kanda.jpg"
+         alt="Kanda Books"
+         class="w-24 h-24 md:w-32 md:h-32 object-contain">
+  </div>
+  <p class="eyebrow">Perpustakaan Digital · A Private Digital Library</p>
+  <h1 class="masthead">KANDA <span class="bk">BOOKS</span></h1>
+  <div class="ornament"><span class="dia"></span></div>
+  <p class="byline">By <span class="font-medium">Muh Yusuf Asri</span> · Independent Author</p>
+  <p class="tagline">Makassar, Indonesia — written, designed &amp; bound by one pair of hands</p>
+</header>
+
+<!-- ============ AUTHOR'S NOTE ============ -->
+<section class="border-y border-line" style="background:rgba(237,227,204,.55)">
+  <div class="max-w-6xl mx-auto px-5 py-9 md:flex md:items-end md:gap-12">
+    <p class="font-display italic text-[1.35rem] md:text-[1.7rem] leading-snug max-w-3xl">
+      &ldquo;I write about the south — its rain, its letters, its stubborn light.
+      Every volume on this shelf was written, set and bound by hand.&rdquo;
+    </p>
+    <p class="mt-4 md:mt-0 md:ml-auto shrink-0 text-[10px] tracking-[0.32em] uppercase text-ink/50 leading-relaxed">
+      — M. Yusuf Asri<br>Makassar, 2019
+    </p>
+  </div>
+</section>
+
+<!-- ============ THE COLLECTION ============ -->
+<main class="max-w-6xl mx-auto px-5 pt-12 pb-20">
+  <div class="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
+    <div>
+      <p class="text-[11px] tracking-[0.3em] uppercase text-ink/50">Katalog · The Collection</p>
+      <h2 class="font-display text-2xl md:text-3xl mt-1">On the Shelf</h2>
+      <p id="statLine" class="text-sm text-ink/60 mt-1"></p>
+    </div>
+    <button id="btnUpload" class="btn-primary"><span data-icon="plus"></span>Upload New Book</button>
+  </div>
+
+  <div id="shelf"></div>
+
+  <div id="emptyState" class="hidden">
+    <div class="py-16 flex flex-col items-center text-center">
+      <svg width="200" height="120" viewBox="0 0 200 120" fill="none" stroke="#6E5B41" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+        <rect x="34" y="86" width="118" height="17" rx="2"/><line x1="48" y1="86" x2="48" y2="103"/>
+        <rect x="46" y="68" width="94" height="16" rx="2"/><line x1="128" y1="68" x2="128" y2="84"/>
+        <rect x="60" y="52" width="66" height="14" rx="2"/><line x1="76" y1="52" x2="76" y2="66"/>
+        <path d="M168 103 v-34"/><path d="M168 84 c-10 -3 -15 -11 -15 -20 c10 1 15 9 15 20 Z"/>
+        <path d="M168 92 c10 -3 15 -11 15 -20 c-10 1 -15 9 -15 20 Z"/><path d="M158 103 h20"/>
+      </svg>
+      <h3 class="font-display text-2xl mt-6">The shelf is empty</h3>
+      <p class="text-ink/60 max-w-md mt-2 leading-relaxed">
+        Every library begins with a single volume. Upload a PDF, give it a title,
+        and it will stand here — saved privately in this browser.
+      </p>
+      <button id="btnEmptyAdd" class="btn-primary mt-7"><span data-icon="plus"></span>Add the First Book</button>
+    </div>
+  </div>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="border-t border-line">
+  <div class="max-w-6xl mx-auto px-5 py-9 flex flex-col md:flex-row md:items-center justify-between gap-3 text-[13px] text-ink/60">
+    <p>© <span id="yr"></span> Muh Yusuf Asri · Kanda Books. All works remain the property of the author.</p>
+    <p class="text-ink/45 italic">Stored privately in your browser — nothing leaves this device · Set in Fraunces &amp; Spectral</p>
+  </div>
+</footer>
+
+<!-- ============ UPLOAD MODAL ============ -->
+<div id="uploadModal" class="modal" role="dialog" aria-modal="true" aria-label="Upload new book">
+  <div class="modal-panel max-w-lg w-full">
+    <button class="icon-x" data-close aria-label="Close"><span data-icon="x"></span></button>
+    <p class="lbl">Catalog Entry</p>
+    <h3 class="font-display text-2xl">Add to the Shelf</h3>
+
+    <form id="uploadForm" class="mt-6 space-y-5" novalidate autocomplete="off">
+      <div>
+        <label class="lbl" for="fTitle">Book Title *</label>
+        <input id="fTitle" class="field" maxlength="120" placeholder="e.g. Cerita dari Ujung Dermaga">
+      </div>
+      <div>
+        <label class="lbl" for="fDesc">Description</label>
+        <textarea id="fDesc" rows="3" class="field resize-none" placeholder="A few lines about this book…"></textarea>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-[110px_1fr] gap-5 items-start">
+        <div>
+          <label class="lbl" for="fYear">Year</label>
+          <input id="fYear" type="number" min="1900" max="2100" class="field">
+        </div>
+        <div>
+          <span class="lbl">Cover (optional)</span>
+          <div class="flex items-start gap-3">
+            <div id="coverPick" class="cover-pick"><span data-icon="image" data-cls="w-5 h-5"></span><span class="text-[11px] tracking-widest uppercase">Add</span></div>
+            <div>
+              <img id="coverPreview" class="hidden" alt="Cover preview">
+              <button type="button" id="coverClear" class="hidden text-xs text-clay underline mt-1.5">Remove cover</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <span class="lbl">PDF File *</span>
+        <div id="dropZone" class="dropzone">
+          <div id="dzDefault">
+            <span data-icon="file" data-cls="w-6 h-6 mx-auto block text-ink/40"></span>
+            <p class="text-sm mt-1.5">Choose a PDF <span class="text-ink/40">or drop it here</span></p>
+          </div>
+          <div id="dzFile" class="hidden flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full grid place-items-center" style="background:rgba(95,122,79,.15)"><span data-icon="check" data-cls="w-4 h-4" style="color:#5F7A4F"></span></span>
+            <span class="min-w-0"><span id="dzName" class="block text-sm font-medium truncate"></span><span id="dzMeta" class="block text-xs text-ink/50"></span></span>
+            <span class="ml-auto text-xs text-clay underline shrink-0">Change</span>
+          </div>
+        </div>
+        <input type="file" id="pdfInput" accept="application/pdf,.pdf" class="hidden">
+        <input type="file" id="coverInput" accept="image/*" class="hidden">
+      </div>
+      <p id="formError" class="hidden text-sm" style="color:#A03B2E"></p>
+      <p class="text-xs text-ink/50 italic">Your PDF is stored privately in this browser (IndexedDB) — nothing is uploaded to any server.</p>
+      <div class="flex justify-end gap-3 pt-3 border-t border-line">
+        <button type="button" class="btn-outline" data-close>Cancel</button>
+        <button type="submit" id="btnSave" class="btn-primary"><span data-icon="upload"></span><span id="btnSaveText">Place on Shelf</span></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ DETAIL MODAL ============ -->
+<div id="detailModal" class="modal" role="dialog" aria-modal="true" aria-label="Book details">
+  <div class="modal-panel max-w-2xl w-full">
+    <button class="icon-x" data-close aria-label="Close"><span data-icon="x"></span></button>
+    <div class="md:flex gap-7">
+      <div class="mx-auto md:mx-0 shrink-0 text-center">
+        <img id="dCover" class="detail-cover w-36 md:w-44 rounded-sm mx-auto" alt="">
+      </div>
+      <div class="mt-5 md:mt-0 min-w-0">
+        <p id="dKicker" class="text-[11px] tracking-[.3em] uppercase text-clay"></p>
+        <h3 id="dTitle" class="font-display text-2xl md:text-[1.85rem] leading-tight mt-1"></h3>
+        <p class="text-sm text-ink/60 mt-0.5">Muh Yusuf Asri · Independent Author</p>
+        <p id="dDesc" class="text-[15px] leading-relaxed text-ink/80 mt-4"></p>
+        <dl id="dMeta" class="grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-3 mt-5 pt-4 border-t border-line"></dl>
+        <div class="flex flex-wrap items-center gap-3 mt-6">
+          <button id="dRead" class="btn-primary"><span data-icon="book"></span>Read Now</button>
+          <button id="dDownload" class="btn-outline"><span data-icon="download"></span>Download</button>
+          <button id="dDelete" class="btn-danger-ghost"><span data-icon="trash" data-cls="w-3.5 h-3.5"></span>Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CONFIRM MODAL ============ -->
+<div id="confirmModal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-panel max-w-md w-full">
+    <h3 id="cfTitle" class="font-display text-xl"></h3>
+    <p id="cfBody" class="text-sm text-ink/70 mt-2 leading-relaxed"></p>
+    <div class="flex justify-end gap-3 mt-6">
+      <button id="cfCancel" class="btn-outline">Keep It</button>
+      <button id="cfOk" class="btn-danger">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ READER (IMMERSIVE) ============ -->
+<div id="reader" class="fixed inset-0 z-40 hidden" style="background:#1A110A">
+  <!-- ambient light -->
+  <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+    <div class="stage-light"></div>
+  </div>
+
+  <!-- stage fills ENTIRE viewport -->
+  <div id="stage" class="absolute inset-0 flex items-center justify-center select-none" style="touch-action:none">
+    <div class="book-perspective">
+      <div id="theBook" class="reader-book">
+        <div class="page-half ph-left"><canvas></canvas><div class="gutter gutter-l"></div></div>
+        <div class="page-half ph-right"><canvas></canvas><div class="gutter gutter-r"></div></div>
+      </div>
+    </div>
+    <p id="readerHint" class="absolute bottom-8 left-1/2 -translate-x-1/2 text-[11px] tracking-[.22em] uppercase text-[#EFE4CC]/55 transition-opacity duration-700 opacity-0 whitespace-nowrap px-4 py-2 rounded-full" style="background:rgba(20,12,6,.6); backdrop-filter:blur(8px);"></p>
+  </div>
+
+  <!-- floating header overlay (auto-hide) -->
+  <header id="readerHeader" class="flex items-center justify-between gap-2 sm:gap-3 text-[#EFE4CC]">
+    <button id="btnBackLib" class="rbtn-wide"><span data-icon="arrowL" data-cls="w-4 h-4"></span><span class="hidden sm:inline">Library</span></button>
+    <div class="min-w-0 text-center max-w-[42vw]">
+      <p id="readerTitle" class="font-display text-base sm:text-lg truncate"></p>
+      <p id="readerAuthor" class="text-[10px] tracking-[.28em] uppercase text-[#EFE4CC]/50 truncate"></p>
+    </div>
+    <div class="flex items-center gap-1.5 sm:gap-2">
+      <button id="btnFirst" class="rbtn" title="First page" aria-label="First page"><span data-icon="chevsL" data-cls="w-4 h-4"></span></button>
+      <button id="rFullscreen" class="rbtn" title="Toggle fullscreen (F)" aria-label="Toggle fullscreen"><span data-icon="expand" data-cls="w-4 h-4"></span></button>
+      <button id="rDownload" class="rbtn" title="Download PDF" aria-label="Download PDF"><span data-icon="download" data-cls="w-4 h-4"></span></button>
+      <button id="rDelete" class="rbtn" title="Delete book" aria-label="Delete book"><span data-icon="trash" data-cls="w-4 h-4"></span></button>
+    </div>
+  </header>
+
+  <!-- floating footer overlay (auto-hide) -->
+  <footer id="readerFooter" class="flex items-center justify-between gap-3 text-[#EFE4CC]">
+    <div class="w-20"><button id="btnPrev" class="rbtn" aria-label="Previous page"><span data-icon="chevL" data-cls="w-5 h-5"></span></button></div>
+    <div class="text-center">
+      <p id="pageCounter" class="font-display text-sm tracking-wide"></p>
+      <div class="mt-1.5 h-[3px] w-40 sm:w-64 bg-white/10 rounded-full overflow-hidden mx-auto">
+        <div id="progressFill" class="h-full rounded-full transition-all duration-300" style="width:0%;background:#B0653F"></div>
+      </div>
+    </div>
+    <div class="w-20 flex justify-end"><button id="btnNext" class="rbtn" aria-label="Next page"><span data-icon="chevR" data-cls="w-5 h-5"></span></button></div>
+  </footer>
+
+  <div id="readerLoading" class="absolute inset-0 flex flex-col items-center justify-center gap-4 text-[#EFE4CC]">
+    <div class="spinner"></div>
+    <p class="text-xs tracking-[.3em] uppercase text-[#EFE4CC]/60">Opening the book</p>
+  </div>
+</div>
+
+<div id="toasts" class="fixed z-[70] bottom-5 left-5 right-5 sm:left-auto sm:right-6 flex flex-col items-end gap-2 pointer-events-none" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  'use strict';
+  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  /* ============ helpers ============ */
+  const $ = s => document.querySelector(s);
+  const el = (t,c,h)=>{ const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+  const escapeHtml = s => String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const hash = s => { let h=2166136261; s=String(s); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; };
+  const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10));
+  const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'book';
+  const fmtSize = n => n>=1048576 ? (n/1048576).toFixed(1)+' MB' : Math.max(1,Math.round(n/1024))+' KB';
+
+  const I = {
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    x:'<path d="M18 6 6 18M6 6l12 12"/>',
+    chevL:'<path d="m15 18-6-6 6-6"/>', chevR:'<path d="m9 18 6-6-6-6"/>',
+    chevsL:'<path d="m11 17-5-5 5-5m7 10-5-5 5-5"/>',
+    arrowL:'<path d="M19 12H5m7 7-7-7 7-7"/>',
+    download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+    upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
+    trash:'<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6h12"/>',
+    book:'<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/>',
+    file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8"/>',
+    check:'<path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="M22 4 12 14.01l-3-3"/>',
+    alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4m0 4h.01"/>',
+    info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/>',
+    image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+    expand:'<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>',
+    compress:'<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>'
+  };
+  const ic = (n,cls) => `<svg class="${cls||'w-4 h-4'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+  document.querySelectorAll('[data-icon]').forEach(s=>{ s.innerHTML = ic(s.dataset.icon, s.dataset.cls); });
+
+  const PALETTE = [
+    { bg:'#7E2F20', spine:'#5A1F13', fg:'241,227,204' },
+    { bg:'#44503C', spine:'#2C362A', fg:'236,229,206' },
+    { bg:'#2C2822', spine:'#191612', fg:'232,214,180' },
+    { bg:'#B0803A', spine:'#8A6228', fg:'45,34,20'   },
+    { bg:'#3E5460', spine:'#2A3B44', fg:'235,226,205' }
+  ];
+
+  /* ============ IndexedDB ============ */
+  const idb = {
+    db:null,
+    open(){ return new Promise((res,rej)=>{
+      if(!window.indexedDB) return rej(new Error('no idb'));
+      const rq = indexedDB.open('kanda-books',1);
+      rq.onupgradeneeded = e => { const db=e.target.result;
+        if(!db.objectStoreNames.contains('books')) db.createObjectStore('books',{keyPath:'id'}); };
+      rq.onsuccess = ()=>{ idb.db=rq.result; res(); };
+      rq.onerror = ()=>rej(rq.error||new Error('idb'));
+    }); },
+    run(store,mode,fn){ return new Promise((res,rej)=>{ if(!idb.db) return rej(new Error('db'));
+      let r; const t=idb.db.transaction(store,mode);
+      try{ r=fn(t.objectStore(store)); }catch(e){ rej(e); return; }
+      t.oncomplete=()=>res(r&&r.result); t.onerror=()=>rej(t.error); t.onabort=()=>rej(t.error); }); },
+    all: ()=>idb.run('books','readonly',s=>s.getAll()),
+    put: b=>idb.run('books','readwrite',s=>s.put(b)),
+    del: id=>idb.run('books','readwrite',s=>s.delete(id))
+  };
+
+  const state = { books:[], detailId:null };
+  let reader = null;
+  const pageCache = new Map();
+  const slots = {
+    left:{ half:document.querySelector('.ph-left'), canvas:document.querySelector('.ph-left canvas') },
+    right:{ half:document.querySelector('.ph-right'), canvas:document.querySelector('.ph-right canvas') }
+  };
+
+  /* ============ toasts ============ */
+  function toast(msg,type){
+    type = type||'info';
+    const t = el('div','toast '+type);
+    const s = el('span'); s.innerHTML = ic(type==='success'?'check':type==='error'?'alert':'info');
+    const p = el('p'); p.textContent = msg;
+    t.append(s,p); $('#toasts').appendChild(t);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+    setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),350); },3600);
+  }
+
+  /* ============ generated covers ============ */
+  async function generateCover(title, subtitle, colorIdx){
+    try{ if(document.fonts&&document.fonts.load) await Promise.all([
+      document.fonts.load('600 70px Fraunces'), document.fonts.load('italic 500 30px Fraunces'), document.fonts.load('500 18px Spectral')
+    ]); }catch(_){}
+    const W=640, H=920, c=document.createElement('canvas'); c.width=W; c.height=H;
+    const x=c.getContext('2d'), pal=PALETTE[colorIdx%PALETTE.length];
+    x.fillStyle=pal.bg; x.fillRect(0,0,W,H);
+    let g=x.createLinearGradient(0,0,34,0); g.addColorStop(0,'rgba(0,0,0,.32)'); g.addColorStop(1,'rgba(0,0,0,0)');
+    x.fillStyle=g; x.fillRect(0,0,34,H);
+    g=x.createLinearGradient(W-26,0,W,0); g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,'rgba(0,0,0,.2)');
+    x.fillStyle=g; x.fillRect(W-26,0,26,H);
+    x.strokeStyle=`rgba(${pal.fg},.85)`; x.lineWidth=2; x.strokeRect(26,26,W-52,H-52);
+    x.strokeStyle=`rgba(${pal.fg},.35)`; x.lineWidth=1; x.strokeRect(38,38,W-76,H-76);
+    const oy=118; x.save(); x.translate(W/2,oy); x.rotate(Math.PI/4); x.fillStyle=`rgba(${pal.fg},.9)`; x.fillRect(-5,-5,10,10); x.restore();
+    x.fillStyle=`rgba(${pal.fg},.5)`; x.fillRect(96,oy-.5,180,1); x.fillRect(W-276,oy-.5,180,1);
+    const maxW=W-170, wrap=f=>{ x.font=f; const out=[]; let ln='';
+      for(const w of title.split(/\s+/)){ const t=ln?ln+' '+w:w; if(x.measureText(t).width>maxW&&ln){out.push(ln);ln=w;} else ln=t; } if(ln)out.push(ln); return out; };
+    let fs=66, lines=[];
+    while(fs>28){ lines=wrap(`600 ${fs}px Fraunces, Georgia, serif`);
+      if(lines.length<=4 && lines.every(l=>x.measureText(l).width<=maxW)) break; fs-=5; }
+    const lh=fs*1.16, ty=subtitle?330:360;
+    x.textAlign='center'; x.fillStyle=`rgba(${pal.fg},.96)`;
+    lines.forEach((l,i)=>x.fillText(l,W/2,ty+i*lh));
+    const ry=ty+(lines.length-1)*lh+44;
+    x.fillStyle=`rgba(${pal.fg},.65)`; x.fillRect(W/2-42,ry,84,1.6);
+    if(subtitle){ x.font='italic 500 27px Fraunces, Georgia, serif'; x.fillStyle=`rgba(${pal.fg},.8)`; x.fillText(subtitle,W/2,ry+52); }
+    const ls='letterSpacing' in x;
+    x.font='500 21px Spectral, Georgia, serif'; if(ls)x.letterSpacing='6px';
+    x.fillStyle=`rgba(${pal.fg},.85)`; x.fillText('MUH YUSUF ASRI', W/2+(ls?3:0), H-170);
+    if(ls)x.letterSpacing='3px';
+    x.font='500 15px Spectral, Georgia, serif'; x.fillStyle=`rgba(${pal.fg},.55)`;
+    x.fillText('KANDA BOOKS', W/2+(ls?1.5:0), H-72);
+    if(ls)x.letterSpacing='0px';
+    return c.toDataURL('image/jpeg',.88);
+  }
+  function downscaleCover(file){
+    return new Promise((res,rej)=>{ const img=new Image();
+      img.onload=()=>{ const r=Math.min(640/img.width, 920/img.height, 1);
+        const c=document.createElement('canvas'); c.width=Math.round(img.width*r); c.height=Math.round(img.height*r);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        URL.revokeObjectURL(img.src); res(c.toDataURL('image/jpeg',.86)); };
+      img.onerror=()=>{ URL.revokeObjectURL(img.src); rej(new Error('img')); };
+      img.src=URL.createObjectURL(file); });
+  }
+
+  function toHex(h){ h=h.replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); return parseInt(h,16); }
+  function shadeHex(hex, amt){
+    const n=toHex(hex); let r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+    r=Math.max(0,Math.min(255,r+amt)); g=Math.max(0,Math.min(255,g+amt)); b=Math.max(0,Math.min(255,b+amt));
+    return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
+  }
+
+  async function loadBooks(){
+    try{ state.books = (await idb.all()) || []; }
+    catch(e){ state.books = []; toast('Browser storage unavailable.','error'); }
+    const stale = state.books.filter(b=>b.isSample);
+    if(stale.length){
+      for(const b of stale){ try{ await idb.del(b.id); }catch(_){} }
+      state.books = state.books.filter(b=>!b.isSample);
+    }
+  }
+
+  /* ============ SHELF ============ */
+  function booksSorted(){
+    return [...state.books].sort((a,b)=>{
+      const ya = a.year||9999, yb = b.year||9999;
+      return ya - yb || a.title.localeCompare(b.title);
+    });
+  }
+
+  function bookElement(b, idx){
+    const wrap = el('button','shelf-book');
+    wrap.type='button'; wrap.dataset.id=b.id;
+    wrap.style.animationDelay = (idx*55)+'ms';
+    wrap.setAttribute('aria-label','Open '+b.title);
+
+    const h1 = hash(b.id);
+    const w = 108 + (h1%4)*8;
+    const h = 168 + (hash(b.id+'h')%5)*8;
+    const d = 26 + (hash(b.id+'d')%3)*4;
+    const pal = PALETTE[hash(b.id+'p') % PALETTE.length];
+
+    const scene = el('div','book-scene');
+    const shadow = el('div','book-shadow');
+    const b3 = el('div','book3d');
+    b3.style.setProperty('--w', w+'px');
+    b3.style.setProperty('--h', h+'px');
+    b3.style.setProperty('--d', d+'px');
+
+    const front = el('div','face front');
+    const img = document.createElement('img');
+    img.alt=''; img.loading='lazy'; img.decoding='async';
+    if(b.cover) img.src = b.cover;
+    else { img.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='; img.style.background=pal.bg; }
+    front.appendChild(img);
+    front.appendChild(el('div','front-shade'));
+
+    const spine = el('div','face spine');
+    spine.style.background = `linear-gradient(to right, ${pal.spine}, ${shadeHex(pal.spine, 18)})`;
+    const st = el('div','spine-text');
+    st.style.color = `rgba(${pal.fg}, .9)`;
+    st.textContent = b.title;
+    spine.appendChild(st);
+
+    const pages = el('div','face pages-edge');
+    const backface = el('div','face backface');
+    backface.style.background = pal.spine;
+
+    b3.append(front, spine, pages, backface);
+    scene.append(shadow, b3);
+    wrap.appendChild(scene);
+
+    const cap = el('div','caption');
+    const cy = b.year ? String(b.year) : '';
+    const cp = b.pages ? b.pages+' pp' : '';
+    cap.innerHTML = `<div class="cap-title">${escapeHtml(b.title)}</div>
+      <div class="cap-sub">${escapeHtml([cy,cp].filter(Boolean).join(' · '))}</div>`;
+    wrap.appendChild(cap);
+
+    wrap.addEventListener('click', ()=>openDetail(b.id));
+    return wrap;
+  }
+
+  function renderShelf(){
+    const shelf = $('#shelf'); shelf.innerHTML='';
+    const books = booksSorted();
+    if(!books.length){
+      $('#emptyState').classList.remove('hidden');
+      $('#statLine').textContent='';
+      return;
+    }
+    $('#emptyState').classList.add('hidden');
+    $('#statLine').textContent = `${books.length} volume${books.length===1?'':'s'} on the shelf`;
+
+    const availW = Math.max(320, (shelf.clientWidth || window.innerWidth - 40));
+    const perRow = Math.max(2, Math.min(6, Math.floor(availW / 172)));
+    for(let i=0;i<books.length;i+=perRow){
+      const row = el('div','shelf-row');
+      const line = el('div','shelf-line');
+      books.slice(i, i+perRow).forEach((b,j)=> line.appendChild(bookElement(b, i+j)));
+      row.append(line, el('div','plank'));
+      shelf.appendChild(row);
+    }
+  }
+
+  /* ============ MODALS ============ */
+  function openModal(id){ $('#'+id).classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeModal(id){ $('#'+id).classList.remove('open'); document.body.style.overflow=''; }
+  document.querySelectorAll('.modal [data-close]').forEach(b=>{
+    b.addEventListener('click', ()=>closeModal(b.closest('.modal').id));
+  });
+  document.querySelectorAll('.modal').forEach(m=>{
+    m.addEventListener('mousedown', e=>{ if(e.target===m) closeModal(m.id); });
+  });
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape'){
+      if(document.fullscreenElement || document.webkitFullscreenElement) return;
+      const open = [...document.querySelectorAll('.modal.open')].pop();
+      if(open) closeModal(open.id);
+      else if(reader) closeReader();
+      return;
+    }
+    if(reader){
+      if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); flip(1); }
+      else if(e.key==='ArrowLeft'){ e.preventDefault(); flip(-1); }
+      else if(e.key==='f'||e.key==='F'){ e.preventDefault(); toggleFullscreen(); }
+      showReaderUI();
+    }
+  });
+
+  /* ============ FULLSCREEN ============ */
+  async function requestFs(){
+    const elx = document.documentElement;
+    try{
+      if(!document.fullscreenElement && !document.webkitFullscreenElement){
+        if(elx.requestFullscreen) await elx.requestFullscreen({navigationUI:'hide'});
+        else if(elx.webkitRequestFullscreen) elx.webkitRequestFullscreen();
+      }
+    }catch(_){}
+  }
+  async function exitFs(){
+    try{
+      if(document.fullscreenElement) await document.exitFullscreen();
+      else if(document.webkitFullscreenElement) document.webkitExitFullscreen();
+    }catch(_){}
+  }
+  async function toggleFullscreen(){
+    if(document.fullscreenElement || document.webkitFullscreenElement) await exitFs();
+    else await requestFs();
+  }
+  function updateFsIcon(){
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    const btn = $('#rFullscreen');
+    if(btn){
+      const span = btn.querySelector('span[data-icon]') || btn.querySelector('span');
+      if(span){ span.innerHTML = ic(isFs ? 'compress' : 'expand', 'w-4 h-4'); }
+    }
+    // toggle immersive class on reader
+    const r = $('#reader');
+    if(r) r.classList.toggle('imm', isFs);
+    if(reader){ computeReaderSize(); }
+  }
+  document.addEventListener('fullscreenchange', updateFsIcon);
+  document.addEventListener('webkitfullscreenchange', updateFsIcon);
+  $('#rFullscreen').addEventListener('click', toggleFullscreen);
+
+  /* ============ IMMERSIVE UI AUTO-HIDE ============ */
+  let uiHideTimer = null;
+  function showReaderUI(){
+    const r = $('#reader'); if(!r) return;
+    r.classList.remove('ui-hidden');
+    clearTimeout(uiHideTimer);
+    // Only auto-hide in fullscreen mode (immersive)
+    if(document.fullscreenElement || document.webkitFullscreenElement){
+      uiHideTimer = setTimeout(()=>{
+        if(reader) r.classList.add('ui-hidden');
+      }, 2200);
+    }
+  }
+
+  /* ============ DETAIL ============ */
+  function openDetail(id){
+    const b = state.books.find(x=>x.id===id); if(!b) return;
+    state.detailId = id;
+    $('#dCover').src = b.cover || '';
+    $('#dCover').alt = b.title;
+    $('#dCover').style.background = b.cover ? 'transparent' : (PALETTE[hash(b.id+'p')%PALETTE.length].bg);
+    $('#dKicker').textContent = 'Your Collection';
+    $('#dTitle').textContent = b.title;
+    $('#dDesc').textContent = b.desc || 'No description.';
+
+    const meta = [];
+    if(b.year) meta.push(['Year', b.year]);
+    if(b.pages) meta.push(['Pages', b.pages]);
+    if(b.size) meta.push(['Size', fmtSize(b.size)]);
+    meta.push(['Added', new Date(b.createdAt||Date.now()).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})]);
+    $('#dMeta').innerHTML = meta.map(([k,v])=>{
+      return `<div><dt class="text-[10px] tracking-[.22em] uppercase text-ink/45">${escapeHtml(k)}</dt>
+              <dd class="font-display text-[15px] mt-0.5">${escapeHtml(v)}</dd></div>`;
+    }).join('');
+
+    $('#dRead').disabled = !b.pdf;
+    $('#dDownload').disabled = !b.pdf;
+    openModal('detailModal');
+  }
+
+  $('#dRead').addEventListener('click', ()=>{
+    const id = state.detailId; if(!id) return;
+    closeModal('detailModal');
+    requestFs();
+    setTimeout(()=>openReader(id), 120);
+  });
+  $('#dDownload').addEventListener('click', async ()=>{
+    const b = state.books.find(x=>x.id===state.detailId); if(!b||!b.pdf) return;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(b.pdf);
+    a.download = slug(b.title)+'.pdf';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+    toast('Downloaded: '+b.title,'success');
+  });
+  $('#dDelete').addEventListener('click', ()=>{
+    const id = state.detailId; if(!id) return;
+    askRemove(id, ()=>{ closeModal('detailModal'); removeBook(id); });
+  });
+
+  /* ============ CONFIRM ============ */
+  function askRemove(id, cb){
+    const b = state.books.find(x=>x.id===id); if(!b) return;
+    $('#cfTitle').textContent = 'Remove this book?';
+    $('#cfBody').textContent = `"${b.title}" will be removed from your shelf. This cannot be undone.`;
+    openModal('confirmModal');
+    const ok = $('#cfOk'), cancel = $('#cfCancel');
+    const cleanup = ()=>{ ok.removeEventListener('click', onOk); cancel.removeEventListener('click', onCancel); };
+    const onOk = ()=>{ cleanup(); closeModal('confirmModal'); cb && cb(); };
+    const onCancel = ()=>{ cleanup(); closeModal('confirmModal'); };
+    ok.addEventListener('click', onOk);
+    cancel.addEventListener('click', onCancel);
+  }
+
+  async function removeBook(id){
+    try{
+      await idb.del(id);
+      state.books = state.books.filter(b=>b.id!==id);
+      renderShelf();
+      toast('Book removed','success');
+    }catch(e){ toast('Could not remove book','error'); }
+  }
+
+  /* ============ UPLOAD ============ */
+  let pendingPdf = null;
+  let pendingCover = null;
+
+  function resetUpload(){
+    pendingPdf = null; pendingCover = null;
+    $('#uploadForm').reset();
+    $('#dzDefault').classList.remove('hidden');
+    $('#dzFile').classList.add('hidden');
+    $('#dropZone').classList.remove('has-file');
+    $('#coverPreview').classList.add('hidden');
+    $('#coverClear').classList.add('hidden');
+    $('#coverPick').classList.remove('hidden');
+    $('#coverPreview').removeAttribute('src');
+    $('#formError').classList.add('hidden');
+    $('#btnSave').disabled = false;
+    $('#btnSaveText').textContent = 'Place on Shelf';
+  }
+
+  $('#btnUpload').addEventListener('click', ()=>{ resetUpload(); openModal('uploadModal'); setTimeout(()=>$('#fTitle').focus(), 100); });
+  $('#btnEmptyAdd').addEventListener('click', ()=>{ resetUpload(); openModal('uploadModal'); setTimeout(()=>$('#fTitle').focus(), 100); });
+
+  const dz = $('#dropZone');
+  dz.addEventListener('click', ()=>$('#pdfInput').click());
+  ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev, e=>{ e.preventDefault(); dz.classList.add('over'); }));
+  ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev, e=>{ e.preventDefault(); dz.classList.remove('over'); }));
+  dz.addEventListener('drop', e=>{
+    const f = e.dataTransfer?.files?.[0]; if(f) handlePdf(f);
+  });
+  $('#pdfInput').addEventListener('change', e=>{ const f=e.target.files?.[0]; if(f) handlePdf(f); });
+
+  function handlePdf(f){
+    if(!f) return;
+    if(!/\.pdf$/i.test(f.name) && f.type!=='application/pdf'){
+      return err('Please choose a PDF file.');
+    }
+    if(f.size > 80*1024*1024){
+      return err('PDF is too large (max 80 MB).');
+    }
+    pendingPdf = f;
+    $('#dzDefault').classList.add('hidden');
+    $('#dzFile').classList.remove('hidden');
+    dz.classList.add('has-file');
+    $('#dzName').textContent = f.name;
+    $('#dzMeta').textContent = fmtSize(f.size);
+    $('#formError').classList.add('hidden');
+    if(!$('#fTitle').value) $('#fTitle').value = f.name.replace(/\.pdf$/i,'').replace(/[_-]+/g,' ').trim();
+  }
+  function err(msg){
+    const e = $('#formError'); e.textContent = msg; e.classList.remove('hidden');
+  }
+
+  $('#coverPick').addEventListener('click', ()=>$('#coverInput').click());
+  $('#coverInput').addEventListener('change', async e=>{
+    const f = e.target.files?.[0]; if(!f) return;
+    try{
+      const data = await downscaleCover(f);
+      pendingCover = data;
+      $('#coverPreview').src = data;
+      $('#coverPreview').classList.remove('hidden');
+      $('#coverClear').classList.remove('hidden');
+      $('#coverPick').classList.add('hidden');
+    }catch(_){ err('Could not read that image.'); }
+  });
+  $('#coverClear').addEventListener('click', ()=>{
+    pendingCover = null;
+    $('#coverPreview').classList.add('hidden');
+    $('#coverClear').classList.add('hidden');
+    $('#coverPick').classList.remove('hidden');
+    $('#coverInput').value = '';
+  });
+
+  $('#uploadForm').addEventListener('submit', async e=>{
+    e.preventDefault();
+    const title = $('#fTitle').value.trim();
+    const desc = $('#fDesc').value.trim();
+    const yearRaw = $('#fYear').value.trim();
+    const year = yearRaw ? parseInt(yearRaw,10) : null;
+
+    if(!title){ return err('Please give the book a title.'); }
+    if(!pendingPdf){ return err('Please attach a PDF file.'); }
+
+    $('#btnSave').disabled = true;
+    $('#btnSaveText').textContent = 'Binding…';
+
+    try{
+      const id = uid();
+      let cover = pendingCover;
+      if(!cover){
+        const pal = hash(id) % PALETTE.length;
+        try{ cover = await generateCover(title, year ? String(year) : '', pal); }catch(_){ cover=''; }
+      }
+      const blob = pendingPdf;
+      let pages = 0;
+      try{
+        if(window.pdfjsLib){
+          const buf = await blob.arrayBuffer();
+          const doc = await pdfjsLib.getDocument({data:buf}).promise;
+          pages = doc.numPages;
+        }
+      }catch(_){}
+
+      const book = {
+        id, slug: slug(title), title, desc,
+        year: (year && year>=1900 && year<=2100) ? year : null,
+        cover, size: blob.size, pages,
+        createdAt: Date.now(), isSample:false, pdf: blob
+      };
+      await idb.put(book);
+      state.books.push(book);
+      closeModal('uploadModal');
+      renderShelf();
+      toast('Placed on the shelf: '+title,'success');
+      setTimeout(()=>{
+        const elx = document.querySelector(`.shelf-book[data-id="${book.id}"]`);
+        if(elx){ elx.classList.add('newly'); elx.scrollIntoView({block:'center',behavior:'smooth'}); }
+      }, 80);
+    }catch(e){
+      console.error(e);
+      err('Could not save the book. Storage may be full.');
+      $('#btnSave').disabled = false;
+      $('#btnSaveText').textContent = 'Place on Shelf';
+    }
+  });
+
+  /* ============ READER ============ */
+  function closeReader(){
+    if(!reader) return;
+    $('#reader').classList.remove('open');
+    $('#theBook').querySelectorAll('.leaf').forEach(n=>n.remove());
+    setTimeout(()=>{
+      $('#reader').classList.add('hidden');
+      $('#readerLoading').classList.remove('hidden');
+    }, 300);
+    try{ reader.pdf && reader.pdf.destroy && reader.pdf.destroy(); }catch(_){}
+    reader = null;
+    document.body.style.overflow='';
+    clearTimeout(uiHideTimer);
+    if(document.fullscreenElement || document.webkitFullscreenElement) exitFs();
+  }
+
+  async function openReader(id){
+    const b = state.books.find(x=>x.id===id);
+    if(!b || !b.pdf){ toast('This book has no PDF file.','error'); return; }
+    if(!window.pdfjsLib){ toast('PDF viewer not loaded.','error'); return; }
+
+    $('#readerTitle').textContent = b.title;
+    $('#readerAuthor').textContent = 'Muh Yusuf Asri · Kanda Books';
+    $('#reader').classList.remove('hidden');
+    $('#reader').classList.remove('ui-hidden');
+    $('#readerLoading').classList.remove('hidden');
+    document.body.style.overflow='hidden';
+    requestAnimationFrame(()=>$('#reader').classList.add('open'));
+
+    try{
+      const buf = b.pdf instanceof Blob ? await b.pdf.arrayBuffer() : b.pdf;
+      const pdf = await pdfjsLib.getDocument({data:buf}).promise;
+      const p1 = await pdf.getPage(1);
+      const vp = p1.getViewport({scale:1});
+      reader = {
+        book:b, pdf, numPages:pdf.numPages,
+        spread:0, aspect: vp.width/vp.height,
+        pw:0, ph:0, busy:false
+      };
+      computeReaderSize();
+      await renderSpread();
+      updatePageCounter();
+      $('#readerLoading').classList.add('hidden');
+      updateFsIcon();
+      showHint();
+      showReaderUI();
+    }catch(e){
+      console.error(e);
+      toast('Could not open this book.','error');
+      closeReader();
+    }
+  }
+
+  function showHint(){
+    const h = $('#readerHint');
+    h.textContent = window.innerWidth<=900
+      ? 'Swipe to turn · Tap for controls'
+      : 'Drag · Arrow keys · F fullscreen · Move mouse for controls';
+    h.style.opacity = '1';
+    clearTimeout(showHint._t);
+    showHint._t = setTimeout(()=>{ h.style.opacity = '0'; }, 3200);
+  }
+
+  function computeReaderSize(){
+    if(!reader) return;
+    const W = window.innerWidth, H = window.innerHeight;
+    const twoPage = W >= 900;
+    // In immersive/fullscreen: minimal padding so book fills the screen
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    const padX = isFs ? 20 : 40;
+    const padY = isFs ? 20 : 60;
+    const availW = Math.max(320, W - padX*2);
+    const availH = Math.max(320, H - padY*2);
+    const aspect = reader.aspect;
+    let ph = availH;
+    let pw = Math.round(ph * aspect);
+    if(twoPage){
+      if(pw*2 > availW){ pw = Math.floor(availW/2); ph = Math.round(pw/aspect); }
+    } else {
+      if(pw > availW){ pw = availW; ph = Math.round(pw/aspect); }
+    }
+    reader.pw = pw; reader.ph = ph;
+    const book = $('#theBook');
+    book.style.setProperty('--pw', pw+'px');
+    book.style.setProperty('--ph', ph+'px');
+    book.classList.toggle('single', !twoPage);
+  }
+
+  async function getPageCanvas(num){
+    const key = `${reader.book.id}:${num}`;
+    if(pageCache.has(key)) return pageCache.get(key);
+    const page = await reader.pdf.getPage(num);
+    const scale = Math.min(2.8, 1800 / Math.max(page.view[2], page.view[3]));
+    const vp = page.getViewport({scale: Math.max(1.4, scale)});
+    const c = document.createElement('canvas');
+    c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+    await page.render({canvasContext:c.getContext('2d', {alpha:false}), viewport:vp}).promise;
+    pageCache.set(key, c);
+    return c;
+  }
+
+  async function drawToCanvas(target, num){
+    if(!num || num<1 || num>reader.numPages){ target.width=1; target.height=1; return; }
+    try{
+      const src = await getPageCanvas(num);
+      if(target.width!==src.width || target.height!==src.height){
+        target.width = src.width; target.height = src.height;
+      }
+      const ctx = target.getContext('2d', {alpha:false});
+      ctx.drawImage(src, 0, 0);
+    }catch(e){ console.warn('render page',num,e); }
+  }
+
+  function clearSlot(side){
+    const c = slots[side].canvas;
+    if(c.width>1){ c.width=1; c.height=1; }
+  }
+
+  function spreadPages(k){
+    if(k===0) return { left:0, right:1 };
+    const left = 2*k, right = 2*k+1;
+    return {
+      left: left <= reader.numPages ? left : 0,
+      right: right <= reader.numPages ? right : 0
+    };
+  }
+  function totalSpreads(){ return reader ? 1 + Math.floor(reader.numPages/2) : 0; }
+
+  async function renderSpread(){
+    if(!reader) return;
+    const { left, right } = spreadPages(reader.spread);
+    await Promise.all([
+      left ? drawToCanvas(slots.left.canvas, left) : Promise.resolve(clearSlot('left')),
+      right ? drawToCanvas(slots.right.canvas, right) : Promise.resolve(clearSlot('right'))
+    ]);
+  }
+
+  function makeLeaf(front, back, mode){
+    const leaf = el('div','leaf');
+    leaf.style.transform = (mode==='fwd') ? 'rotateY(0deg)' : 'rotateY(-180deg)';
+    const f = el('div','leaf-face lf-front');
+    const b = el('div','leaf-face lf-back');
+    const fc = document.createElement('canvas'); fc.width=1; fc.height=1;
+    const bc = document.createElement('canvas'); bc.width=1; bc.height=1;
+    f.append(fc, el('div','leaf-shade'));
+    b.append(bc, el('div','leaf-shade'));
+    leaf.append(f, b);
+    if(front) drawToCanvas(fc, front);
+    if(back)  drawToCanvas(bc, back);
+    return leaf;
+  }
+
+  function easeInOutCubic(t){
+    return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+  }
+  function animateFlip(leaf, dir, duration){
+    duration = duration || 900;
+    return new Promise(resolve=>{
+      const shades = leaf.querySelectorAll('.leaf-shade');
+      const t0 = performance.now();
+      function frame(now){
+        const t = Math.min(1, (now - t0) / duration);
+        const e = easeInOutCubic(t);
+        const angle = dir > 0 ? (-180 * e) : (-180 + 180 * e);
+        leaf.style.transform = `rotateY(${angle}deg)`;
+        const shade = Math.sin(Math.PI * t) * 0.75;
+        for(const s of shades) s.style.opacity = shade.toFixed(3);
+        if(t < 1) requestAnimationFrame(frame);
+        else { for(const s of shades) s.style.opacity = '0'; resolve(); }
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  async function flip(dir){
+    if(!reader || reader.busy) return;
+    const ts = totalSpreads();
+    if(dir>0 && reader.spread >= ts-1) return;
+    if(dir<0 && reader.spread <= 0) return;
+
+    reader.busy = true;
+    const book = $('#theBook');
+    let leaf;
+
+    if(dir>0){
+      const front = 2*reader.spread + 1;
+      const back  = 2*reader.spread + 2;
+      leaf = makeLeaf(front, back, 'fwd');
+    } else {
+      const front = 2*(reader.spread-1) + 1;
+      const back  = 2*reader.spread;
+      leaf = makeLeaf(front, back, 'bwd');
+    }
+    book.appendChild(leaf);
+    void leaf.offsetHeight;
+    await animateFlip(leaf, dir, 900);
+    reader.spread += dir;
+    await renderSpread();
+    leaf.remove();
+    reader.busy = false;
+    updatePageCounter();
+  }
+
+  function updatePageCounter(){
+    if(!reader) return;
+    const ts = totalSpreads();
+    const { left, right } = spreadPages(reader.spread);
+    let label;
+    if(left && right) label = `Pages ${left}–${right}`;
+    else if(right) label = `Page ${right}`;
+    else if(left) label = `Page ${left}`;
+    else label = '—';
+    $('#pageCounter').textContent = `${label} of ${reader.numPages}`;
+    const pct = ts>1 ? (reader.spread/(ts-1))*100 : 100;
+    $('#progressFill').style.width = pct.toFixed(1)+'%';
+    $('#btnPrev').disabled = reader.spread<=0;
+    $('#btnNext').disabled = reader.spread>=ts-1;
+  }
+
+  $('#btnPrev').addEventListener('click', ()=>{ flip(-1); showReaderUI(); });
+  $('#btnNext').addEventListener('click', ()=>{ flip(1); showReaderUI(); });
+  $('#btnFirst').addEventListener('click', async ()=>{
+    if(!reader || reader.busy || reader.spread===0) return;
+    reader.spread = 0; await renderSpread(); updatePageCounter(); showReaderUI();
+  });
+  $('#btnBackLib').addEventListener('click', closeReader);
+  $('#rDownload').addEventListener('click', ()=>{
+    if(!reader) return;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(reader.book.pdf);
+    a.download = slug(reader.book.title)+'.pdf';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+    showReaderUI();
+  });
+  $('#rDelete').addEventListener('click', ()=>{
+    if(!reader) return;
+    const id = reader.book.id;
+    askRemove(id, ()=>{ closeReader(); removeBook(id); });
+  });
+
+  /* ---- mouse / touch / gestures on stage ---- */
+  (function(){
+    const stage = $('#stage');
+    const readerEl = $('#reader');
+    let sx=0, sy=0, t0=0, active=false, moved=false;
+
+    const start = (x,y)=>{ sx=x; sy=y; t0=Date.now(); active=true; moved=false; };
+    const end = (x,y)=>{
+      if(!active) return; active=false;
+      const dx = x-sx, dy = y-sy, dt = Date.now()-t0;
+      if(Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+      if(dt > 900) return;
+      flip(dx<0 ? 1 : -1);
+      showReaderUI();
+    };
+
+    stage.addEventListener('touchstart', e=>{
+      if(e.touches.length===1){ start(e.touches[0].clientX, e.touches[0].clientY); showReaderUI(); }
+    }, {passive:true});
+    stage.addEventListener('touchend', e=>{
+      const t=e.changedTouches[0]; end(t.clientX, t.clientY);
+    }, {passive:true});
+    stage.addEventListener('mousedown', e=>{ if(e.button===0) start(e.clientX, e.clientY); });
+    window.addEventListener('mouseup', e=>{ end(e.clientX, e.clientY); });
+
+    // Show controls on any activity
+    readerEl.addEventListener('mousemove', ()=>{ if(reader) showReaderUI(); });
+    readerEl.addEventListener('touchstart', ()=>{ if(reader) showReaderUI(); }, {passive:true});
+    readerEl.addEventListener('mousedown', ()=>{ if(reader) showReaderUI(); });
+  })();
+
+  /* resize */
+  let rT;
+  window.addEventListener('resize', ()=>{
+    clearTimeout(rT);
+    rT = setTimeout(async ()=>{
+      renderShelf();
+      if(reader){
+        computeReaderSize();
+        await renderSpread();
+        updatePageCounter();
+      }
+    }, 180);
+  });
+
+  /* ============ INIT ============ */
+  $('#yr').textContent = new Date().getFullYear();
+
+  async function init(){
+    const ok = await idb.open().then(()=>true).catch(()=>false);
+    if(!ok){
+      toast('This browser does not support local storage. Books will not be saved.','error');
+    } else {
+      await loadBooks();
+    }
+    renderShelf();
+    updateFsIcon();
+  }
+  init();
+})();
+</script>
+</body>
+</html>
